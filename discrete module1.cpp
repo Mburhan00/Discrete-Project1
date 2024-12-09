@@ -1,75 +1,58 @@
-#include <iostream>
+ #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 using namespace std;
 
 int main() {
-    const int maxstudents = 100;  
-    string students[maxstudents];  
-    int friendCount[maxstudents] = {0};   
-    int studentCount = 0;  
-    ifstream file("Friends Dataset.csv");  
+    const int maximumfriends = 100;
+    string friends[maximumfriends];
+    int counts[maximumfriends] = {0};
+    int totalFriends = 0;
+
+    ifstream file("Friends Dataset.csv");
     if (!file) {
-        cerr << "File could not be opened!" << endl;
+        cerr << "Error: Could not open the file!" << endl;
         return 1;
     }
     string line;
-    bool Headerrow = true;  
-
+    bool Headerrow = true;
     while (getline(file, line)) {
         if (Headerrow) {
-            Headerrow = false;  
+            Headerrow = false;
             continue;
         }
-
         stringstream dis(line);
-        string studentname, friendName;
-        int count = 0;
- 
-        getline(dis, studentname, ',');
+        string studentName;
+        getline(dis, studentName, ',');
 
-   
-        bool studentExists = false;
-        for (int i = 0; i < studentCount; i++) {
-            if (students[i] == studentname) {
-                studentExists = true;
-                break;
-            }
-        }
-
-        if (!studentExists) {
-            students[studentCount] = studentname;
-            studentCount++;
-        }
-
-       
+        string friendName;
         while (getline(dis, friendName, ',')) {
-            count++;
-        }
-
-        
-        int studentIndex = -1;
-        for (int i = 0; i < studentCount; i++) {
-            if (students[i] == studentname) {
-                studentIndex = i;
-                break;
+            bool found = false;
+            for (int i = 0; i < totalFriends; i++) {
+                if (friends[i] == friendName) {
+                    counts[i]++;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                friends[totalFriends] = friendName;
+                counts[totalFriends] = 1;
+                totalFriends++;
             }
         }
-        friendCount[studentIndex] = count;
     }
-   
     string mostPopular;
-    int maxFriends = 0;
-    for (int i = 0; i < studentCount; i++) {
-        if (friendCount[i] > maxFriends) {
-            maxFriends = friendCount[i];
-            mostPopular = students[i];
+    int maxCount = 0;
+    for (int i = 0; i < totalFriends; i++) {
+        if (counts[i] > maxCount) {
+            maxCount = counts[i];
+            mostPopular = friends[i];
         }
     }
-    
     cout << "The most popular student is " << mostPopular 
-         << " with " << maxFriends << " friends." << endl;
+         << " with " << maxCount << " mentions." << endl;
 
     return 0;
 }
